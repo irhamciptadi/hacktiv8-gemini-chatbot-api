@@ -28,8 +28,8 @@ form.addEventListener("submit", async function (e) {
     text: userMessage,
   });
 
-  // Show temporary "Thinking..." message
-  const thinkingMessage = appendMessage("bot", "Thinking...");
+  // Show temporary thinking animation
+  const thinkingMessage = appendThinkingMessage();
 
   try {
     // Send POST request to backend
@@ -114,11 +114,57 @@ function appendMessage(sender, text) {
 }
 
 /**
+ * Appends a thinking indicator with animated bubbles
+ * @returns {HTMLElement} The created thinking message element
+ */
+function appendThinkingMessage() {
+  const msg = document.createElement("div");
+  msg.classList.add("message", "bot");
+
+  // Create container for thinking text and animation
+  const container = document.createElement("div");
+  container.style.display = "flex";
+  container.style.alignItems = "center";
+  container.style.gap = "8px";
+
+  // Add "Thinking" text
+  const thinkingText = document.createElement("span");
+  thinkingText.textContent = "Thinking";
+  container.appendChild(thinkingText);
+
+  // Create animated dots container
+  const dotsContainer = document.createElement("div");
+  dotsContainer.classList.add("typing-indicator");
+
+  // Create three animated dots
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement("span");
+    dotsContainer.appendChild(dot);
+  }
+
+  container.appendChild(dotsContainer);
+  msg.appendChild(container);
+  chatBox.appendChild(msg);
+
+  // Auto-scroll to bottom
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  return msg;
+}
+
+/**
  * Updates an existing message element with new text
  * @param {HTMLElement} messageElement - The message element to update
  * @param {string} newText - The new text content
  */
 function updateMessage(messageElement, newText) {
+  // Remove typing indicator class if present
+  messageElement.classList.remove("typing-indicator");
+
+  // Clear existing content (animated dots)
+  messageElement.innerHTML = "";
+
+  // Set new text content
   messageElement.textContent = newText;
 
   // Auto-scroll to bottom
